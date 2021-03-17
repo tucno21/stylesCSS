@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_self">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/1d88763075.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/tucno21/stylesCSS/main/styles.css">
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form action="#">
+                <h1>Create Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input id="name" type="text" placeholder="Name" />
+                <input id="email" type="email" placeholder="Email" />
+                <input id="pw" type="password" placeholder="Password" />
+                <button name="daftar">Sign Up</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form action="#">
+                <h1>Sign in</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your account</span>
+                <input id="input1" type="email" placeholder="Email" />
+                <input id="input2" type="password" placeholder="Password" />
+                <a href="#">Forgot your password?</a>
+                <button name="masuk">Sign In</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>
+                        To keep connected with us please login with your personal info
+                    </p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</body>
+
+</html>
+
+<script>
+    // original
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => {
+        container.classList.add('right-panel-active');
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove('right-panel-active');
+    });
+
+    //===============================
+    const masuk = document.getElementsByName('masuk')[0];
+    const daftar = document.getElementsByName('daftar')[0];
+
+    const input1 = document.getElementById('input1');
+    const input2 = document.getElementById('input2');
+
+    //conectando con la base de datos
+    input1.addEventListener('input', () => {
+        if (input1.value.length > 0) {
+            google.script.run.withSuccessHandler(dataFromSpreadSheet).matchData(input1.value);
+        }
+    });
+
+    var correctEmailPassword = [];
+    function dataFromSpreadSheet(data) {
+        var correctEmailPasswordTemp = data;
+        for (var i = 0; i < correctEmailPasswordTemp.length; i++) {
+            correctEmailPassword.push(correctEmailPasswordTemp[i]);
+        }
+    }
+
+    masuk.addEventListener('click', () => {
+        if (input1.value !== "" && input2.value !== "" && input1.value + input2.value == correctEmailPassword) {
+            swal("Muy bien", "Datos correctos", "success");
+
+            var recordLog = { email: input1.value }
+            google.script.run.addRecordLog(recordLog)
+
+            window.open('https://www.google.com', '_top');
+        } else {
+            swal("que paso!", "datos incorrectos!", "error");
+        }
+    });
+
+
+    //===============registro de DATOS
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const password = document.getElementById('pw');
+
+
+    daftar.addEventListener('click', () => {
+        var signUpData = { nm: name.value, em: email.value, pw: password.value };
+
+        if (name.value == "" || email.value == "" || password.value == "") {
+            swal("que paso!", "datos incorrectos!", "error");
+        } else {
+            google.script.run.withSuccessHandler(clearData).addSignUpData(signUpData);
+        };
+    });
+
+    function clearData() {
+        swal("Good job!", "You clicked the button!", "success");
+        name.value = "";
+        email.value = "";
+        password.value = "";
+        container.classList.remove('right-panel-active');
+    };
+
+    function underDev() {
+        alert('en desarrollo')
+    };
+
+</script>
